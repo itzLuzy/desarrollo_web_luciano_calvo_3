@@ -1,0 +1,59 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Listado</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    {% if data %}
+    <header>
+        <h1> Listado de Actividades </h1>
+    </header>
+    <section>
+    <table>
+        <thead>
+            <tr>
+                <th>Inicio</th>
+                <th>Término</th>
+                <th>Comuna</th>
+                <th>Sector</th>
+                <th>Tema</th>
+                <th>Nombre Organizador</th>
+                <th>Total Fotos</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for act in data %}
+            <tr onclick="window.location='{{ url_for('detalle', actividad_id=act.id) }}'">
+                <td>{{ act.inicio }}</td>
+                <td>{{ act.termino }}</td>
+                <td>{{ act.comuna }}</td>
+                <td>{{ act.sector }}</td>
+                <td>{{ act.tema }}</td>
+                <td>{{ act.nombre }}</td>
+                <td>{{ act.n_fotos }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <h1>Aún no hay actividades registradas :c</h1>
+    {% endif %}
+    </section>
+
+    {% if total > por_pagina %}
+    <div style="text-align: center; margin-top: 20px;">
+        {% if pagina > 1 %}
+            <a href="{{ url_for('listado', page=pagina - 1) }}">Anterior</a>
+        {% endif %}
+        <span>Página {{ pagina }}</span>
+        {% if total > pagina * por_pagina %}
+            <a href="{{ url_for('listado', page=pagina + 1) }}">Siguiente</a>
+        {% endif %}
+    </div>
+    {% endif %}
+    <a href="{{ url_for('index') }}">Volver a portada</a>
+</body>
+</html>

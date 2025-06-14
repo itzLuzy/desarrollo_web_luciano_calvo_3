@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Estadísticas</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+</head>
+<body>
+    <header>
+        <h1> Estadísticas de Actividades</h1>
+    </header>
+    <section>
+        <h2>Actividades por Día</h2>
+        <div id="grafico-lineas" style="width: 90%; height: 400px; margin: auto;"></div>
+
+        <h2>Actividades por Tipo</h2>
+        <div id="grafico-torta" style="width: 90%; height: 400px; margin: auto;"></div>
+
+        <h2>Actividades por Horario del Día</h2>
+        <div id="grafico-barras" style="width: 90%; height: 400px; margin: auto;"></div>
+
+        <div style="text-align: center; margin-top: 30px;">
+            <a href="{{ url_for('index') }}">Volver a la portada</a>
+        </div>
+    </section>
+
+    <script>
+        // Línea: Actividades por día
+        fetch('/api/estadisticas/actividades_por_dia')
+            .then(response => response.json())
+            .then(data => {
+                Highcharts.chart('grafico-lineas', {
+                    chart: { type: 'line' },
+                    title: { text: 'Actividades por Día' },
+                    xAxis: {
+                        categories: data.map(x => x.fecha),
+                        title: { text: 'Fecha' }
+                    },
+                    yAxis: {
+                        title: { text: 'Cantidad de Actividades' }
+                    },
+                    series: [{ name: 'Actividades', data: data.map(x => x.cantidad) }]
+                });
+            });
+
+        // Torta: Actividades por tipo
+        fetch('/api/estadisticas/actividades_por_tema')
+            .then(response => response.json())
+            .then(data => {
+                Highcharts.chart('grafico-torta', {
+                    chart: { type: 'pie' },
+                    title: { text: 'Actividades por Tema' },
+                    series: [{
+                        name: 'Cantidad',
+                        data: data.map(x => ({ name: x.tema, y: x.cantidad }))
+                    }]
+                });
+            });
+
+        // Barras: Actividades por hora del día y mes
+        fetch('/api/estadisticas/actividades_por_horario')
+            .then(response => response.json())
+            .then(data => {
+                Highcharts.chart('grafico-barras', {
+                    chart: { type: 'column' },
+                    title: { text: 'Actividades por Mes y Horario' },
+                    xAxis: {
+                        categories: data.map(x => 'Mes ' + x.mes),
+                        title: { text: 'Mes' }
+                    },
+                    yAxis: {
+                        min: 0,
+                        title: { text: 'Cantidad de Actividades' }
+                    },
+                    series: [
+                        { name: 'Mañana', data: data.map(x => x.manana) },
+                        { name: 'Tarde', data: data.map(x => x.tarde) },
+                        { name: 'Noche', data: data.map(x => x.noche) }
+                    ]
+                });
+            });
+    </script>
+</body>
+</html>

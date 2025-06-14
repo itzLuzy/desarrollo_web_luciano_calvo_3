@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Formulario</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="{{ url_for('static', filename='js/script.js') }}" defer></script>
+</head>
+<body>
+    <header>
+        <h1>Formulario de Actividad</h1>
+    </header>
+    <form action="{{ url_for('agregar') }}" method="post" enctype="multipart/form-data" onsubmit="return validarFormulario()">
+        <fieldset>
+            <legend>¿Dónde?</legend>
+            <label>Región:
+                <select id="region" name="region" required onchange="actualizarComunas(this);" onload="resetRegiones();">
+                    <option value="">--Elige una opción--</option>
+                    {% for region in regiones %}
+                        <option value="{{ region.id }}">{{ region.nombre }}</option>
+                    {% endfor %}
+                </select>
+            </label>
+            <label>Comuna:
+                <select id="comuna" name="comuna" required>
+                    <option value="">--Elige una opción--</option>
+                </select>
+            </label>
+            <label>Sector:
+                <input type="text" name="sector" maxlength="100">
+            </label>
+        </fieldset>
+
+        <fieldset>
+            <legend>¿Quién organiza?</legend>
+            <label>Nombre:
+                <input type="text" name="nombre" maxlength="200" required>
+            </label>
+            <label>Email:
+                <input type="email" name="email" maxlength="100" required>
+            </label>
+            <label>Celular:
+                <input type="tel" name="telefono" placeholder="+569.12345678">
+            </label>
+            <label>Contactar por: </label>
+                {% for method in contact_methods %}
+                    <input id="{{method}}" type="checkbox" name="contactos" value="{{method}}" onclick="displayTextboxOnCheck(this, '{{method}}');"> {{method}}
+                    <input id="{{method}}_id" type="text" name="identificadores[]" style="display:none;" minlength="4" maxlength="50"> <br>
+                {% endfor %}
+        </fieldset>
+
+        <fieldset>
+            <legend>¿Cuándo y de qué trata?</legend>
+            <label>Inicio:
+                <input type="datetime-local" name="inicio" required>
+            </label>
+            <label>Término:
+                <input type="datetime-local" name="termino">
+            </label>
+            <label>Descripción:
+                <textarea cols="50" rows="10" maxlength="499" name="descripcion"></textarea>
+            </label>
+            <label>Tema:
+                <select name="tema" id="tema" onchange="mostrarOtroTema()">
+                    <option value="">--Elige una opción--</option>
+                    {% for tema in temas %}
+                        <option value="{{tema}}"> {{tema}} </option>
+                    {% endfor %}
+                </select>
+                <input type="text" name="otro_tema" id="otroTema" style="display:none;" maxLength = "15" minLength = "3" placeholder="Especifique tema">
+            </label>
+            <label>Fotos:</label>
+                <div id="fotosContainer">
+                    <input type="file" name="fotos[]" accept="image/*">
+                </div>
+                <button type="button" onclick="agregarFoto()">Agregar otra foto</button>
+                </fieldset>
+
+                <button type="submit">Agregar esta actividad</button>
+                <a href="{{ url_for('index') }}">Volver a portada</a>
+
+                <script>
+                    function agregarFoto() {
+                        const contenedor = document.getElementById("fotosContainer");
+                        const actuales = contenedor.querySelectorAll("input[type='file']");
+                        if (actuales.length < 5) {
+                            const nuevoInput = document.createElement("input");
+                            nuevoInput.type = "file";
+                            nuevoInput.name = "fotos[]";
+                            nuevoInput.accept = "image/*";
+                            contenedor.appendChild(nuevoInput);
+                        } 
+                        else {
+                            alert("Solo se permiten 5 fotos como máximo.");
+                        }
+                    }
+                </script>
+    </form>
+</body>
+<script lang="javascript" src="{{ url_for('static', filename='js/script.js') }}"> </script>
+<script>
+        window.addEventListener('load', function () {
+                document.getElementById('activity-form').reset();
+        });
+</script>
+</html>

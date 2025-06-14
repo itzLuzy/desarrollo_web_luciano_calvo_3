@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Portada</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <header>
+        <h1>Bienvenido a las Actividades! :D</h1>
+        <nav>
+            <ul>
+                <li><a href="{{ url_for('formulario') }}">Agregar actividad</a></li>
+                <li><a href="{{ url_for('listado') }}">Ver listado de actividades</a></li>
+                <li><a href="{{ url_for('estadisticas') }}">Ver estadísticas</a></li>
+            </ul>
+        </nav>
+    </header>
+    <section>
+        {% if data %}
+        <h2>Últimas actividades</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Inicio</th>
+                    <th>Término</th>
+                    <th>Comuna</th>
+                    <th>Sector</th>
+                    <th>Tema</th>
+                    <th>Foto</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for act in data %}
+                <tr>
+                    <td>{{ act.inicio }}</td>
+                    <td>{{ act.termino }}</td>
+                    <td>{{ act.comuna }}</td>
+                    <td>{{ act.sector }}</td>
+                    <td>{{ act.tema }}</td>
+                    <td><picture><img src="{{ act.foto }}" alt="Foto de la actividad" height="150" width="150"></picture></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p>Aún no hay actividades registradas :c</p>
+        {% endif %}
+    </section>
+</body>
+</html>
